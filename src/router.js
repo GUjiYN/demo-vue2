@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import PushDrawer from '@/views/PushDrawer.vue'
-import ElementDrawer from '@/views/ElementDrawer.vue'
+import LeftApp from '@/views/LeftApp.vue'
+import PushDrawer from "@/views/PushDrawer.vue";
 
 Vue.use(VueRouter)
 
@@ -12,9 +12,9 @@ const routes = [
     component: PushDrawer
   },
   {
-    path: '/element-drawer',
-    name: 'ElementDrawer',
-    component: ElementDrawer
+    path: '/left',
+    name: 'LeftApp',
+    component: LeftApp
   }
 ]
 
