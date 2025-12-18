@@ -37,7 +37,7 @@ export default {
           this.showDrawer = true
         }
       } catch (err) {
-        // ignore
+        console.warn('Message handling error:', err)
       }
     }
     window.addEventListener('message', this._onMsg)

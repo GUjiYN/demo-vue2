@@ -54,7 +54,7 @@ export default {
           this.showDialog = true
         }
       } catch (err) {
-        // 忽略
+        console.warn('Message handling error:', err)
       }
     }
     window.addEventListener('message', this._onMsg)

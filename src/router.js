@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import LeftApp from '@/views/LeftApp.vue'
-import PushDrawer from "@/views/PushDrawer.vue";
+import PushDrawer from '@/views/PushDrawer.vue'
+import NoIframeScoped from '@/views/NoIframeScoped.vue'
 
 Vue.use(VueRouter)
 
@@ -12,10 +13,15 @@ const routes = [
     component: PushDrawer
   },
   {
+    path: '/no-iframe',
+    name: 'NoIframeScoped',
+    component: NoIframeScoped
+  },
+  {
     path: '/left',
     name: 'LeftApp',
     component: LeftApp
-  }
+  },
 ]
 
 const router = new VueRouter({
