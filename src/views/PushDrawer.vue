@@ -1,19 +1,41 @@
 <template>
-  <!-- 父页面：Grid 两列布局 + iframe 左侧 + 右侧抽屉 -->
-  <div class="page-container" :style="{ '--drawer-w': showDrawer ? '500px' : '0px' }">
-    <!-- 左侧业务：子文档（同源路由 /left）-->
-    <iframe
-      ref="leftFrame"
-      class="left-app"
-      src="/left"
-      loading="lazy"
-      title="左侧页面"
-    ></iframe>
-    <!-- 右侧抽屉：处于父页面右列，不受左侧遮罩影响 -->
+  <div class="page-container" :style="{ '--drawer-w': drawerAlways ? '500px' : (showDrawer ? '500px' : '0px') }">
+    <section class="left-scope">
+      <!-- 侧边栏导航：点击切换父路由 /frame/...，从而更新 iframe 的 src -->
+      <aside class="sidebar">
+        <el-menu :default-active="activeMenuPath" router>
+          <el-menu-item index="/frame/left">
+            <i class="el-icon-house"></i>
+            <span>首页</span>
+          </el-menu-item>
+          <el-menu-item index="/frame/left/reports">
+            <i class="el-icon-document"></i>
+            <span>报表</span>
+          </el-menu-item>
+          <el-menu-item index="/frame/left/settings">
+            <i class="el-icon-setting"></i>
+            <span>设置</span>
+          </el-menu-item>
+        </el-menu>
+      </aside>
+      <main class="left-main">
+        <iframe
+          ref="leftFrame"
+          class="left-app"
+          :src="iframeSrc"
+          loading="lazy"
+          title="左侧页面"
+        ></iframe>
+      </main>
+    </section>
+
+    <!-- 右侧抽屉 -->
     <aside class="drawer" v-show="showDrawer">
       <div class="drawer-header">
         <h3>抽屉标题</h3>
-        <el-button type="text" @click="showDrawer = false"><i class="el-icon-close"></i></el-button>
+        <el-button type="text" @click="toggle()">
+          <i :class="showDrawer ? 'el-icon-arrow-right' : 'el-icon-arrow-left'"></i>
+        </el-button>
       </div>
       <div class="drawer-body">
         <p>这里可以进行其他操作</p>
@@ -26,7 +48,23 @@
 export default {
   name: 'PushDrawer',
   data() {
-    return { showDrawer: false }
+    return {
+      showDrawer: true,
+    }
+  },
+  computed: {
+    // 从父路由 /frame/:leftPath 推导 iframe 的实际地址
+    iframeSrc() {
+      const p = this.$route.params.leftPath || 'left'
+      return '/' + (p.startsWith('left') ? p : `left/${p}`)
+    },
+    activeMenuPath() {
+      const p = this.$route.params.leftPath || 'left'
+      return '/frame/' + p
+    }
+  },
+  methods: {
+    toggle() { this.showDrawer = !this.showDrawer },
   },
   mounted() {
     // 监听来自左侧 iframe 的指令
@@ -44,12 +82,11 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener('message', this._onMsg)
-  },
-  methods: {}
+  }
 }
 </script>
 
-<style>
+<style scoped>
 .page-container {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -58,15 +95,23 @@ export default {
   grid-template-columns: 1fr var(--drawer-w, 0px);
   grid-template-rows: 100vh;
   overflow: hidden;
+  background: #f5f7fa;
+}
+.left-scope {
+  position: relative;
+  transform: translateZ(0);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 220px 1fr;
 }
 
-.left-app {
-  width: 100%;
+.sidebar {
   height: 100%;
-  display: block;
   background: #fff;
-  border: 0;
+  border-right: 1px solid #e8e8e8;
 }
+
+.left-main { padding: 0; overflow: hidden; }
 
 .drawer {
   inline-size: var(--drawer-w, 0px);
@@ -82,10 +127,19 @@ export default {
   padding: 12px 16px;
   border-bottom: 1px solid #e8e8e8;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
+  gap: 8px;
 }
 
 .drawer-header h3 { margin: 0; font-size: 16px; color: #333; }
 .drawer-body { padding: 16px; line-height: 1.7; }
+
+.left-app {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: #fff;
+  border: 0;
+}
 </style>
